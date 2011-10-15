@@ -1,0 +1,7 @@
+A simple example of how to invoke the ldoce Dictionary API using jQuery's ajax support.
+
+
+NB. You will need to change the app.js source code and replace the "insert your key here" text with your own key obtained form developer.pearson.com
+
+var apiKey = 'insert your key here'
+

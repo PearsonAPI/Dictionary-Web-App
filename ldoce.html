@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="UTF-8">
+	<title>Longman Dictionary API</title>
+	<script src="jquery.js"></script>          
+	<script src="hasAttr.js"></script>
+	<script src="app.js"></script>
+	<script type="text/javascript">                                         
+		$(function() {
+			init()
+		})               
+	</script>    
+</head>
+
+<body>
+<article>
+	<h1>Longman Dictionary API Example</h1>
+	
+	<section id="input">
+		<h2>Search</h2>
+        <form action="#">
+			<p>Enter a word of phrase to search for:
+			<input id="searchText" type=text/>
+			<button id="search">Search</button></p>
+        </form>
+	</section>
+	
+	<section id="results">
+		<h2>Results</h2>
+		<ul id="resultList"></ul>
+	</section>
+
+	<section id="debug">
+		<h2>Debug Log</h2>
+		<p id="log"></p>
+	</section>
+
+</article>
+</body>
