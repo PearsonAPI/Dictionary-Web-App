@@ -1,7 +1,8 @@
-var apiKey = 'insert you key here'
-var baseUrl = 'https://api.pearson.com/longman/dictionary/0.1';
-var dataFmt = '.json';
-var searchUrl = baseUrl + '/entry' + dataFmt;
+var apiKey = 'insert you key here';
+var keyData = '';// 'apiKey=' + apiKey;
+var baseUrl = 'https://api.pearson.com/v2/dictionaries/ldoce5';
+var dataFmt = '';
+var searchUrl = baseUrl + '/entries' + dataFmt;
 var debugLog;
 
 function init(){
@@ -15,7 +16,8 @@ function init(){
 
 function doSearch(searchFor){
 	debugLog.append('Looking up ' + searchFor + ' using  ' + searchUrl + '<br/>');
-	var data = 'apikey=' + apiKey + '&q=' + searchFor	
+	// Use double quotation marks to handle words e.g. yes-man
+	var data = keyData + '&headword=' + '"' + searchFor + '"';
 	$.ajax({
     	type: 'GET',
     	url: searchUrl,
@@ -34,7 +36,7 @@ function doSearch(searchFor){
 
 function handleResponse(data){
 	debugLog.append('Response received <br/>');
-	var results = data.Entries.Entry;
+	var results = data.results;
 	var html = entry(results);
 	$('#resultList').html(html);
 	$('li>a').click(function(){
@@ -53,18 +55,18 @@ function entry(from){
 			html += entry(from[idx]);
 		}
 	} else {
-		debugLog.append("Processing Entry: " + from.Head.HWD['#text'] + '<br/>');
+		debugLog.append("Processing Entry: " + from.headword + '<br/>');
 		html += '<li><a>';
-		html += from.Head.HWD['#text'];
+		html += from.headword;
 		html += '</a><div>';
 		if ($(from).hasAttr('multimedia')) {
 			html += multimedia(from.multimedia);
 		}
 		html += '<ol id="sense">';
-		html += sense(from.Sense);
+		html += sense(from.senses);
 		html += '</ol>';
 		html += '</div></li>\n';
-		debugLog.append("<br/>Processed Entry: " + from.Head.HWD['#text'] + '<br/>');
+		debugLog.append("<br/>Processed Entry: " + from.headword + '<br/>');
 	}
 	return html;
 }
@@ -98,9 +100,9 @@ function multimedia(from){
 				break;
 		}
 		if (mm_href.match(/\.mp3$/)) {
-			html = mm_type + ' <audio controls="controls"> <source src="' + baseUrl + mm_href + '?apikey=' + apiKey +'" type="audio/mpeg"/> </audio>';
+			html = mm_type + ' <audio controls="controls"> <source src="' + baseUrl + mm_href + '?' + keyData +'" type="audio/mpeg"/> </audio>';
 		} else if (mm_type == 'DVD_PICTURES') {
-			html = '<img src="' + baseUrl + mm_href + '?apikey=' + apiKey +'"> </img>';
+			html = '<img src="' + baseUrl + mm_href + '?' + keyData +'"> </img>';
 		}
 		html += '<br/>';
 	}
@@ -118,9 +120,9 @@ function sense(from){
 	} else if ($(from).hasAttr('Subsense')) {
 		html += sense(from.Subsense);
 	} else {
-		html += '<li>' + text(from.DEF) + '<br/>';
-		if ($(from).hasAttr('EXAMPLE')){
-			html += example(from.EXAMPLE);
+		html += '<li>' + from.definition + '<br/>';
+		if ($(from).hasAttr('examples')){
+			html += example(from.examples);
 		} else if ($(from).hasAttr('LEXUNIT')){
 			html += example(from.LEXUNIT);
 		}
@@ -150,7 +152,7 @@ function example(from){
 function text(from){
 	debugLog.append('text ');
 	var result = '';
-	var text = from['#text'];
+	var text = from.text;
 	var nonDv;
 	var hasNonDv = $(from).hasAttr('NonDV');
 	if ($.isArray(text)){
